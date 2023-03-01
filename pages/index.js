@@ -5,11 +5,10 @@ export default function ToDo() {
   const [state, setState] = useState({
     items: [],
     dataLoaded: false,
-    modal: false,
   });
   const [modal, setModal] = useState(null);
-  const [redTitle, setRedTitle] = useState("border");
-  const [redDescription, setRedDescription] = useState("border");
+  const [redTitle, setRedTitle] = useState(false);
+  const [redDescription, setRedDescription] = useState(false);
   const titleInput = useRef(null);
   const descriptionInput = useRef(null);
 
@@ -28,16 +27,16 @@ export default function ToDo() {
         dataLoaded: true,
         modal: false,
       });
-      inputTitle = titleInput.current.value = "";
-      inputDescription = descriptionInput.current.value = "";
-      setRedDescription("border");
-      setRedTitle("border");
+      titleInput.current.value = "";
+      descriptionInput.current.value = "";
+      setRedDescription(false);
+      setRedTitle(false);
     }
     if (newItem.description === "") {
-      setRedDescription("border-red");
+      setRedDescription(true);
     }
     if (newItem.title === "") {
-      setRedTitle("border-red");
+      setRedTitle(true);
     }
   };
 
@@ -60,12 +59,11 @@ export default function ToDo() {
   }, []);
 
   useEffect(() => {
-    
     if (state.dataLoaded) {
       localStorage.setItem("ToDo", JSON.stringify({ items: state.items }));
     }
   }, [state]);
-  
+
   return (
     <div className="flex flex-col justify-center items-center mt-[1px]">
       <h1 className="text-h1 text-83 -mb-4 -mt-2 w-550 text-center font-sans">
@@ -77,16 +75,14 @@ export default function ToDo() {
             <div>
               <h2 className="mt-2">Title:</h2>
               <input
-                className={`border ${redTitle} mr-4 placeholder:pl-1`}
+                className={`border ${
+                  redTitle ? "border-red" : "border"
+                } mr-4 placeholder:pl-1`}
                 typeof="text"
                 placeholder="Enter title"
                 ref={titleInput}
               ></input>
-              <p
-                className={`text-red ${
-                  redTitle !== "border" ? "visible" : "invisible"
-                }`}
-              >
+              <p className={`text-red ${redTitle ? "visible" : "invisible"}`}>
                 Title is empty
               </p>
             </div>
@@ -95,14 +91,16 @@ export default function ToDo() {
               <div>
                 <div>
                   <input
-                    className={`border ${redDescription} placeholder:pl-1`}
+                    className={`border ${
+                      redDescription ? "border-red" : "border"
+                    } placeholder:pl-1`}
                     type="text"
                     ref={descriptionInput}
                     placeholder="Enter description"
                   ></input>
                   <p
                     className={`text-red ${
-                      redDescription !== "border" ? "visible" : "invisible"
+                      redDescription ? "visible" : "invisible"
                     }`}
                   >
                     Description is empty
@@ -157,9 +155,7 @@ export default function ToDo() {
       {modal && (
         <div
           key={modal.id}
-          className={`${
-            modal ? "fixed bg-gray w-full h-full top-0" : "hidden"
-          }`}
+          className={`${modal && "fixed bg-gray w-full h-full top-0"}`}
         >
           <div className="bg-white m-40 w-300">
             <div className="text-center pt-10 font-semibold text-2xl">
