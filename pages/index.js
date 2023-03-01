@@ -8,8 +8,8 @@ export default function ToDo() {
     modal: false,
   });
   const [modal, setModal] = useState(null);
-  const [redTitle, setRedTitle] = useState(null);
-  const [redDescription, setRedDescription] = useState(null);
+  const [redTitle, setRedTitle] = useState("border");
+  const [redDescription, setRedDescription] = useState("border");
   const titleInput = useRef(null);
   const descriptionInput = useRef(null);
 
@@ -60,12 +60,12 @@ export default function ToDo() {
   }, []);
 
   useEffect(() => {
-    console.log(state);
+    
     if (state.dataLoaded) {
       localStorage.setItem("ToDo", JSON.stringify({ items: state.items }));
     }
   }, [state]);
-
+  
   return (
     <div className="flex flex-col justify-center items-center mt-[1px]">
       <h1 className="text-h1 text-83 -mb-4 -mt-2 w-550 text-center font-sans">
