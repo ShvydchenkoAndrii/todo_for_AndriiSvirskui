@@ -120,6 +120,7 @@ export default function ToDo() {
                       <input
                         type="checkbox"
                         onChange={() => handletToggleCompleted(item.id)}
+                        onClick={(e) => e.stopPropagation()}
                         checked={item.completed && "checked"}
                       ></input>
                     </div>
