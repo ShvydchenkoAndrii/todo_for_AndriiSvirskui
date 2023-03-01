@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import React from "react";
 
 export default function ToDo() {
-  const [state, setState] = useState({ items: [], filter: "all" });
+  const [state, setState] = useState({
+    items: [],
+    dataLoaded: false,
+    modal: false,
+  });
+  const [modal, setModal] = useState(null);
   const titleInput = useRef(null);
   const descriptionInput = useRef(null);
 
@@ -12,11 +18,14 @@ export default function ToDo() {
       title: inputTitle,
       description: inputDescription,
       completed: false,
-      change: false,
       id: state.items.length + 1,
     };
     if (newItem.title !== "" && newItem.description !== "") {
-      setState({ items: state.items.concat(newItem), filter: "all" });
+      setState({
+        items: state.items.concat(newItem),
+        dataLoaded: true,
+        modal: false,
+      });
     }
     inputTitle = titleInput.current.value = "";
     inputDescription = descriptionInput.current.value = "";
@@ -28,38 +37,23 @@ export default function ToDo() {
     setState({ ...state, items: state.items });
   };
 
-  const handlerDeleteButt = (id) => {
-    const itemIdx = state.items.findIndex((item) => item.id === id);
-    state.items.splice(itemIdx, 1);
-    setState({ ...state, items: state.items });
+  const handleShowModal = (id) => {
+    const item = state.items.find((item) => item.id === id);
+    setModal(item);
   };
-
-  const list1 = state.items.map((item) => {
-    return (
-      <tbody>
-        <td>{item.id}.</td>
-        <td>{item.title}</td>
-        <td>{item.description}</td>
-        <td>
-          {" "}
-          <input
-            type="checkbox"
-            onClick={() => handletToggleCompleted(item.id)}
-          ></input>
-        </td>
-      </tbody>
-    );
-  });
 
   useEffect(() => {
     const loadedState = JSON.parse(localStorage.getItem("ToDo"));
     if (loadedState) {
-      setState(loadedState);
+      setState({ items: loadedState.items, dataLoaded: true, modal: false });
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("ToDo", JSON.stringify(state));
+    console.log(state);
+    if (state.dataLoaded) {
+      localStorage.setItem("ToDo", JSON.stringify({ items: state.items }));
+    }
   }, [state]);
 
   return (
@@ -67,7 +61,7 @@ export default function ToDo() {
       <h1 className="text-h1 text-83 -mb-4 -mt-2 w-550 text-center font-sans">
         todos
       </h1>
-      <div className="bg-white border border-gray border-opacity-20 mt-[3px] shadow-xl  border-none">
+      <div className="bg-white border border-gray border-opacity-20 mt-[3px] shadow-xl  border-none w-[700px]">
         <div>
           <div className="flex justify-center items-center">
             <div>
@@ -103,18 +97,68 @@ export default function ToDo() {
             </div>
           </div>
         </div>
-        <div>
-          <table className="w-full text-center">
-            <thead>
-              <td>ID</td>
-              <td>TITLE</td>
-              <td>DESCRIPTION</td>
-              <td>STATUS</td>
-            </thead>
-            {state.items.length > 0 ? list1 : null}
-          </table>
+        <div className="grid grid-rows-4 px-10 p-3 gap-2 ">
+          <div className=" grid grid-cols-4 gap-10 items-center justify-items-center">
+            <div>ID</div>
+            <div>TITLE</div>
+            <div>DESCRIPTION</div>
+            <div>STATUS</div>
+          </div>
+          {state.items.length > 0
+            ? state.items.map((item) => {
+                return (
+                  <div
+                    key={item.id}
+                    className=" bg-main p-2 grid grid-cols-4 gap-10 justify-items-center "
+                    onClick={() => handleShowModal(item.id)}
+                  >
+                    <div>{item.id}.</div>
+                    <div className="truncate w-full">{item.title}</div>
+                    <div className="truncate w-full">{item.description}</div>
+                    <div>
+                      {" "}
+                      <input
+                        type="checkbox"
+                        onChange={() => handletToggleCompleted(item.id)}
+                        checked={item.completed && "checked"}
+                      ></input>
+                    </div>
+                  </div>
+                );
+              })
+            : null}
         </div>
       </div>
+      {modal && (
+        <div
+          key={modal.id}
+          className={`${
+            modal ? "fixed bg-gray w-full h-full top-0" : "hidden"
+          }`}
+        >
+          <div className="bg-white m-40 w-300">
+            <div className="text-center pt-10 font-semibold text-2xl">
+              {modal.title}
+            </div>
+            <div className="p-5 font-semibold">Description:</div>
+            <div className="pl-5 py-2">{modal.description}</div>
+            <div className="pl-5 py-2">
+              Status:{" "}
+              <input
+                type="checkbox"
+                onChange={() => handletToggleCompleted(modal.id)}
+                checked={modal.completed && "checked"}
+              ></input>
+            </div>
+            <button
+              className="m-5 py-1 border rounded-xl"
+              onClick={() => setModal(null)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

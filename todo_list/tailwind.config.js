@@ -20,8 +20,7 @@ module.exports = {
       grey: "#13ce66",
       green: "#50C878",
       input: "rgba(0, 0, 0, 0.003)",
-      gray: "#8492a6",
-      "gray-light": "#e6e6e6",
+      gray: "#808080",
     },
     fontFamily: {
       sans: ["Helvetica Neue", "Helvetica", "Arial", "sans-serif"],
