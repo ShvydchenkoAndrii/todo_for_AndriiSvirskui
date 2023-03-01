@@ -8,6 +8,8 @@ export default function ToDo() {
     modal: false,
   });
   const [modal, setModal] = useState(null);
+  const [redTitle, setRedTitle] = useState(null);
+  const [redDescription, setRedDescription] = useState(null);
   const titleInput = useRef(null);
   const descriptionInput = useRef(null);
 
@@ -26,9 +28,17 @@ export default function ToDo() {
         dataLoaded: true,
         modal: false,
       });
+      inputTitle = titleInput.current.value = "";
+      inputDescription = descriptionInput.current.value = "";
+      setRedDescription("border");
+      setRedTitle("border");
     }
-    inputTitle = titleInput.current.value = "";
-    inputDescription = descriptionInput.current.value = "";
+    if (newItem.description === "") {
+      setRedDescription("border-red");
+    }
+    if (newItem.title === "") {
+      setRedTitle("border-red");
+    }
   };
 
   const handletToggleCompleted = (id) => {
@@ -63,37 +73,51 @@ export default function ToDo() {
       </h1>
       <div className="bg-white border border-gray border-opacity-20 mt-[3px] shadow-xl  border-none w-[700px]">
         <div>
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center m-2">
             <div>
-              <h2 className="mx-4 mt-2">Title:</h2>
+              <h2 className="mt-2">Title:</h2>
               <input
-                className="border m-4 placeholder:pl-1"
+                className={`border ${redTitle} mr-4 placeholder:pl-1`}
                 typeof="text"
-                id="textInp"
                 placeholder="Enter title"
                 ref={titleInput}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handlerAddButt();
-                  }
-                }}
               ></input>
+              <p
+                className={`text-red ${
+                  redTitle !== "border" ? "visible" : "invisible"
+                }`}
+              >
+                Title is empty
+              </p>
             </div>
             <div>
-              <h2 className="mx-4 mt-2">Description:</h2>
+              <h2 className="mt-2">Description:</h2>
               <div>
-                <input
-                  className="border m-4 placeholder:pl-1"
-                  ref={descriptionInput}
-                  placeholder="Enter description"
-                ></input>
-                <button
-                  className="m-4 p-1 border text-center"
-                  onClick={() => handlerAddButt()}
-                >
-                  Create
-                </button>
+                <div>
+                  <input
+                    className={`border ${redDescription} placeholder:pl-1`}
+                    type="text"
+                    ref={descriptionInput}
+                    placeholder="Enter description"
+                  ></input>
+                  <p
+                    className={`text-red ${
+                      redDescription !== "border" ? "visible" : "invisible"
+                    }`}
+                  >
+                    Description is empty
+                  </p>
+                </div>
               </div>
+            </div>
+            <div>
+              <button
+                className="m-4 p-1 border text-center"
+                onClick={() => handlerAddButt()}
+                type="submit"
+              >
+                Create
+              </button>
             </div>
           </div>
         </div>
